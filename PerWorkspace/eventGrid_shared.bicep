@@ -1,14 +1,13 @@
 param location string
-//param storageAccountId string
 param storageAccountName string
-param azureTreId string
+param workspaceResourceNameSuffix string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
   name: storageAccountName
 }
 
 resource eventGridSystemTopic 'Microsoft.EventGrid/systemTopics@2021-06-01-preview' = {
-  name: 'evgt-${storageAccountName}-${azureTreId}'
+  name: 'evgt-${workspaceResourceNameSuffix}-${storageAccountName}'
   location: location
   dependsOn: [
     storageAccount
@@ -18,3 +17,5 @@ resource eventGridSystemTopic 'Microsoft.EventGrid/systemTopics@2021-06-01-previ
     topicType: 'Microsoft.Storage.StorageAccounts'
   }
 }
+
+output systemTopicName string = eventGridSystemTopic.name
