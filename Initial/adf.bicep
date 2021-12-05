@@ -2,6 +2,7 @@ param name string
 param location string
 
 var managedVnetName = 'default'
+var autoResolveIntegrationRuntimeName = 'AutoResolveIntegrationRuntime'
 
 resource adf 'Microsoft.DataFactory/factories@2018-06-01' = {
   name: name
@@ -17,7 +18,7 @@ resource managedVnet 'Microsoft.DataFactory/factories/managedVirtualNetworks@201
 }
 
 resource integrationRuntime 'Microsoft.DataFactory/factories/integrationRuntimes@2018-06-01' = {
-  name: '${name}/AutoResolveIntegrationRuntime'
+  name: '${name}/${autoResolveIntegrationRuntimeName}'
   dependsOn: [
     managedVnet
     adf
@@ -31,6 +32,29 @@ resource integrationRuntime 'Microsoft.DataFactory/factories/integrationRuntimes
     typeProperties: {
       computeProperties: {
         location: 'AutoResolve'
+      }
+    }
+  }
+}
+
+resource genericLinkedServiceAdlsGen2 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
+  name: '${name}/ls_ADLSGen2_Generic'
+  dependsOn: [
+    adf
+    integrationRuntime
+  ]
+  properties: {
+    type: 'AzureBlobFS'
+    typeProperties: {
+      url: '@{concat(\'https://\', linkedService().storageAccountName, \'.dfs.${environment().suffixes.storage}\')}'
+    }
+    connectVia: {
+      referenceName: autoResolveIntegrationRuntimeName
+      type: 'IntegrationRuntimeReference'
+    }
+    parameters: {
+      storageAccountName: {
+        type: 'String'
       }
     }
   }
