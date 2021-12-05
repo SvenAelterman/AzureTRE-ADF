@@ -1,5 +1,6 @@
 param storageAccountId string
-param storageAccountName string
+param sinkStorageAccountName string
+param sourceStorageAccountName string
 param adfName string
 param ingestPipelineName string
 param shortWorkspaceId string
@@ -28,8 +29,10 @@ resource publicTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
           type: 'PipelineReference'
         }
         parameters: {
-          StorageAccountName: storageAccountName
-          FileName: '@triggerBody().fileName'
+          sourceStorageAccountName: sourceStorageAccountName
+          sinkStorageAccountName: sinkStorageAccountName
+          fileName: '@triggerBody().fileName'
+          folderPath: '@triggerBody().folderPath'
         }
       }
     ]

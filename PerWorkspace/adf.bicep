@@ -28,7 +28,8 @@ module ingestTrigger 'adfTrigger_shared.bicep' = {
     shortWorkspaceId: shortWorkspaceId
     storageAccountType: 'Public'
     ingestPipelineName: ingestPipelineName
-    storageAccountName: publicStorageAccountName
+    sourceStorageAccountName: publicStorageAccountName
+    sinkStorageAccountName: privateStorageAccountName
   }
 }
 

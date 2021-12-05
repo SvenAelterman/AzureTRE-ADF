@@ -3,6 +3,7 @@ param location string
 
 var managedVnetName = 'default'
 var autoResolveIntegrationRuntimeName = 'AutoResolveIntegrationRuntime'
+var linkedServiceName = 'ls_ADLSGen2_Generic'
 
 resource adf 'Microsoft.DataFactory/factories@2018-06-01' = {
   name: name
@@ -38,7 +39,7 @@ resource integrationRuntime 'Microsoft.DataFactory/factories/integrationRuntimes
 }
 
 resource genericLinkedServiceAdlsGen2 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  name: '${name}/ls_ADLSGen2_Generic'
+  name: '${name}/${linkedServiceName}'
   dependsOn: [
     adf
     integrationRuntime
@@ -61,3 +62,30 @@ resource genericLinkedServiceAdlsGen2 'Microsoft.DataFactory/factories/linkedser
 }
 
 // TODO: Add pipelines
+
+resource dfsDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+  name: '${name}/DfsDataset'
+  properties: {
+    type: 'Binary'
+    linkedServiceName: {
+      referenceName: linkedServiceName
+      type: 'LinkedServiceReference'
+      parameters: {
+        storageAccountName: {
+          value: '@dataset().storageAccountName'
+          type: 'Expression'
+        }
+      }
+    }
+    parameters: {
+      storageAccountName: {
+        type: 'String'
+      }
+    }
+    typeProperties: {
+      location: {
+        type: 'AzureBlobFSLocation'
+      }
+    }
+  }
+}
