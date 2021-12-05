@@ -13,3 +13,5 @@ New-AzDeployment -TemplateFile .\main.bicep -Location $Location `
 	-TemplateParameterObject $Parameters
 
 # TODO: Capture output and start new ADF triggers (can't be done with Bicep/ARM)
+
+# TODO: Approve managed private endpoint

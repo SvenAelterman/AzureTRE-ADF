@@ -29,8 +29,8 @@ module storageAccounts 'storage.bicep' = {
   }
 }
 
-module adfTriggers 'adfTriggers.bicep' = {
-  name: 'adf-trigger-${deploymentTime}'
+module adfTriggers 'adf.bicep' = {
+  name: 'adf-ws-${shortWorkspaceId}-${deploymentTime}'
   params: {
     adfName: adfName
     // TODO: Hardcoded
@@ -39,11 +39,11 @@ module adfTriggers 'adfTriggers.bicep' = {
     deploymentTime: deploymentTime
     publicStorageAccountId: storageAccounts.outputs.publicStorageAccountId
     publicStorageAccountName: storageAccounts.outputs.publicStorageAccountName
+    privateStorageAccountId: storageAccounts.outputs.privateStorageAccountId
+    privateStorageAccountName: storageAccounts.outputs.privateStorageAccountName
     shortWorkspaceId: shortWorkspaceId
   }
 }
-
-// TODO: Managed Private Endpoint in ADF for private storage account
 
 module eventGridSubscriptions 'eventGridSubscriptions.bicep' = {
   name: 'evgs-${deploymentTime}'

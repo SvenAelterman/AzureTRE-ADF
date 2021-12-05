@@ -5,6 +5,8 @@ param adfName string
 param ingestPipelineName string
 param publicStorageAccountId string
 param publicStorageAccountName string
+param privateStorageAccountId string
+param privateStorageAccountName string
 param deploymentTime string
 param shortWorkspaceId string
 
@@ -17,7 +19,7 @@ resource adf 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   scope: treHubResourceGroup
 }
 
-module publicTrigger 'adfTrigger_shared.bicep' = {
+module ingestTrigger 'adfTrigger_shared.bicep' = {
   scope: treHubResourceGroup
   name: 'adf-trigger-public-${deploymentTime}'
   params: {
@@ -27,5 +29,15 @@ module publicTrigger 'adfTrigger_shared.bicep' = {
     storageAccountType: 'Public'
     ingestPipelineName: ingestPipelineName
     storageAccountName: publicStorageAccountName
+  }
+}
+
+module adfManagedPrivateEndpoint 'adfManagedPrivateEndpoint.bicep' = {
+  name: 'adf-pe-${deploymentTime}'
+  scope: treHubResourceGroup
+  params: {
+    adfName: adfName
+    privateStorageAccountId: privateStorageAccountId
+    privateStorageAccountName: privateStorageAccountName
   }
 }
