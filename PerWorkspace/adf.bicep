@@ -9,6 +9,7 @@ param privateStorageAccountId string
 param privateStorageAccountName string
 param deploymentTime string
 param shortWorkspaceId string
+param exportApprovedContainerName string = 'export-approved'
 
 resource treHubResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: 'rg-${azureTreId}'
@@ -30,6 +31,21 @@ module ingestTrigger 'adfTrigger_shared.bicep' = {
     ingestPipelineName: ingestPipelineName
     sourceStorageAccountName: publicStorageAccountName
     sinkStorageAccountName: privateStorageAccountName
+  }
+}
+
+module exportTrigger 'adfTrigger_shared.bicep' = {
+  scope: treHubResourceGroup
+  name: 'adf-trigger-public-${deploymentTime}'
+  params: {
+    adfName: adf.name
+    storageAccountId: privateStorageAccountId
+    shortWorkspaceId: shortWorkspaceId
+    storageAccountType: 'Private'
+    ingestPipelineName: ingestPipelineName
+    sourceStorageAccountName: privateStorageAccountName
+    sinkStorageAccountName: publicStorageAccountName
+    containerName: exportApprovedContainerName
   }
 }
 

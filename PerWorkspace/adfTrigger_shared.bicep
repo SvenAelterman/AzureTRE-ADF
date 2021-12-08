@@ -9,13 +9,16 @@ param shortWorkspaceId string
   'Private'
 ])
 param storageAccountType string
+param containerName string = ''
 
 resource publicTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
   name: '${adfName}/trigger_ws_${shortWorkspaceId}_${storageAccountType}_BlobCreated'
   properties: {
     type: 'BlobEventsTrigger'
     typeProperties: {
-      // No blobPathBeginsWith property means all containers will be matched
+      // No blobPathBeginsWith property means all containers will be matched (used for ingest)
+      // TODO: Determine if ingesting in new source container will create target container
+      blobPathBeginsWith: !empty(containerName) ? '/${containerName}/blobs/' : json('null')
       ignoreEmptyBlobs: true
       events: [
         'Microsoft.Storage.BlobCreated'
