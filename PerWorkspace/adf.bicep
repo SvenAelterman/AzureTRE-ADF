@@ -36,7 +36,7 @@ module ingestTrigger 'adfTrigger_shared.bicep' = {
 
 module exportTrigger 'adfTrigger_shared.bicep' = {
   scope: treHubResourceGroup
-  name: 'adf-trigger-public-${deploymentTime}'
+  name: 'adf-trigger-private-${deploymentTime}'
   params: {
     adfName: adf.name
     storageAccountId: privateStorageAccountId
