@@ -11,7 +11,7 @@ param shortWorkspaceId string
 param storageAccountType string
 param containerName string = ''
 
-resource publicTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
+resource trigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
   name: '${adfName}/trigger_ws_${shortWorkspaceId}_${storageAccountType}_BlobCreated'
   properties: {
     type: 'BlobEventsTrigger'
