@@ -9,7 +9,6 @@ param privateStorageAccountId string
 param privateStorageAccountName string
 param deploymentTime string
 param shortWorkspaceId string
-param exportApprovedContainerName string = 'export-approved'
 
 resource treHubResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: 'rg-${azureTreId}'
@@ -17,6 +16,11 @@ resource treHubResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' exi
 
 resource adf 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: adfName
+  scope: treHubResourceGroup
+}
+
+module containerNames 'containerNames.bicep' = {
+  name: 'cn'
   scope: treHubResourceGroup
 }
 
@@ -31,6 +35,7 @@ module ingestTrigger 'adfTrigger_shared.bicep' = {
     ingestPipelineName: ingestPipelineName
     sourceStorageAccountName: publicStorageAccountName
     sinkStorageAccountName: privateStorageAccountName
+    containerName: containerNames.outputs.ingestContainerName
   }
 }
 
@@ -45,7 +50,7 @@ module exportTrigger 'adfTrigger_shared.bicep' = {
     ingestPipelineName: ingestPipelineName
     sourceStorageAccountName: privateStorageAccountName
     sinkStorageAccountName: publicStorageAccountName
-    containerName: exportApprovedContainerName
+    containerName: containerNames.outputs.exportApprovedContainerName
   }
 }
 

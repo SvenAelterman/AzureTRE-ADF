@@ -14,6 +14,15 @@ var vnetId = 'vnet-${workspaceResourceNameSuffix}'
 
 var adfName = 'adf-${azureTreId}-${location}'
 
+resource treHubResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
+  name: 'rg-${azureTreId}'
+}
+
+resource adf 'Microsoft.DataFactory/factories@2018-06-01' existing = {
+  name: adfName
+  scope: treHubResourceGroup
+}
+
 resource workspaceResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: 'rg-${workspaceResourceNameSuffix}'
 }
@@ -26,6 +35,7 @@ module storageAccounts 'storage.bicep' = {
     location: location
     deploymentTime: deploymentTime
     vnetId: vnetId
+    adfPrincipalId: adf.identity.principalId
   }
 }
 
@@ -34,7 +44,7 @@ module adfTriggers 'adf.bicep' = {
   params: {
     adfName: adfName
     // TODO: Hardcoded
-    ingestPipelineName: 'pipe-pub_to_pri'
+    ingestPipelineName: 'pipe-data_move'
     azureTreId: azureTreId
     deploymentTime: deploymentTime
     publicStorageAccountId: storageAccounts.outputs.publicStorageAccountId
